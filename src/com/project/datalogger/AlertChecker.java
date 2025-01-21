@@ -9,7 +9,7 @@ import com.virtualplc.VirtualPLC;
 
 public class AlertChecker {
 	public static void checkAlerts(VirtualPLC plc) {
-		try (Connection connection = DatabaseManager.connect()) { // DatabaseManager의 연결 사용
+		try (Connection connection = DatabaseManager.connect()) {
 			if (plc.getSlurryVolume() < 10) {
 				saveAlert(connection, "Slurry", "Slurry volume critically low.");
 			}

@@ -29,6 +29,6 @@ public class Main {
 					e.printStackTrace();
 				}
 			}
-		}, 0, 300000); // 300,000ms = 5분
+		}, 0, 10000); // 300,000ms = 5분
 	}
 }
