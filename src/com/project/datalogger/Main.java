@@ -8,7 +8,7 @@ public class Main {
 		// TCP 서버 실행 (VirtualPLC 데이터 수신)
 		new Thread(() -> {
 			try {
-				DataReceiver.startServer(8080); // TCP 서버 실행
+				DataReceiver.startServer(8081); // TCP 서버 실행
 			} catch (Exception e) {
 				System.err.println("Failed to start DataReceiver: " + e.getMessage());
 				e.printStackTrace();
@@ -29,6 +29,6 @@ public class Main {
 					e.printStackTrace();
 				}
 			}
-		}, 0, 10000); // 300,000ms = 5분
+		}, 0, 300_000); // 300,000ms = 5분
 	}
 }

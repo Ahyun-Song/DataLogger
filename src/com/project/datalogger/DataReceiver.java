@@ -1,13 +1,13 @@
 package com.project.datalogger;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.DataInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -25,18 +25,27 @@ public class DataReceiver {
 				System.out.println("New client connected");
 
 				// 데이터를 수신하여 큐에 저장
-				try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-					String jsonData;
-					while ((jsonData = in.readLine()) != null) {
-						System.out.println("Received JSON Data: " + jsonData);
+				new Thread(() -> {
+					try (DataInputStream dataInputStream = new DataInputStream(socket.getInputStream())) {
+						while (true) {
+							// 길이 프리픽스 읽기 (4바이트)
+							int messageLength = dataInputStream.readInt();
 
-						// JSON 데이터 파싱 및 큐에 추가
-						JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
-						dataQueue.add(jsonObject); // 큐에 데이터 추가
+							// JSON 데이터 읽기
+							byte[] jsonDataBytes = new byte[messageLength];
+							dataInputStream.readFully(jsonDataBytes);
+
+							String jsonData = new String(jsonDataBytes);
+							System.out.println("Received JSON Data: " + jsonData);
+
+							// JSON 데이터 파싱 및 큐에 추가
+							JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
+							dataQueue.add(jsonObject); // 큐에 데이터 추가
+						}
+					} catch (Exception e) {
+						System.err.println("Error processing client data: " + e.getMessage());
 					}
-				} catch (Exception e) {
-					System.err.println("Error processing client data: " + e.getMessage());
-				}
+				}).start();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

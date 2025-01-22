@@ -12,16 +12,18 @@ import com.virtualplc.VirtualPLC;
 public class DatabaseManager {
 	// MSSQL 연결 정보
 	private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=SlurryCoatingDB;integratedSecurity=true;trustServerCertificate=true;";
-	
+
 	// 데이터베이스 연결 메서드
 	public static Connection connect() throws SQLException {
 		try {
 			Connection connection = DriverManager.getConnection(DB_URL);
-			System.out.println("Database connected successfully using Windows Authentication.");
+			// 연결 성공 메시지
+			System.out.println("Database connected successfully.");
 			return connection;
 		} catch (SQLException e) {
-			System.err.println("Database connection failed: " + e.getMessage());
-			throw e;
+			// 연결 실패 메시지
+			System.err.println("Failed to connect to the database: " + e.getMessage());
+			throw e; // 예외를 다시 던져 호출자가 처리하도록 함
 		}
 	}
 
@@ -46,7 +48,6 @@ public class DatabaseManager {
 			stmt.setDouble(3, plc.getSlurryVolume());
 			stmt.setDouble(4, plc.getSlurryTemperature());
 			stmt.executeUpdate();
-			System.out.println("Slurry data saved.");
 		} catch (SQLException e) {
 			System.err.println("Error saving Slurry data: " + e.getMessage());
 			e.printStackTrace();
@@ -61,7 +62,6 @@ public class DatabaseManager {
 			stmt.setDouble(2, plc.getCoatingSpeed());
 			stmt.setDouble(3, plc.getCoatingThickness());
 			stmt.executeUpdate();
-			System.out.println("Coating data saved.");
 		} catch (SQLException e) {
 			System.err.println("Error saving Coating data: " + e.getMessage());
 			e.printStackTrace();
@@ -75,7 +75,6 @@ public class DatabaseManager {
 			stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
 			stmt.setDouble(2, plc.getDryingTemperature());
 			stmt.executeUpdate();
-			System.out.println("Drying data saved.");
 		} catch (SQLException e) {
 			System.err.println("Error saving Drying data: " + e.getMessage());
 			e.printStackTrace();
